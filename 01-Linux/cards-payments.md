@@ -16,5 +16,15 @@ Unathorized access may lead to financial lose.
 - Centrilized logs under /var/log/sqb
 - Firewall with default deny policy
 
+## Threat Mitigation
+This baseline mitigates risks of lateral movement between services,
+unauthorized access to sensitive configuration files,
+and uncontrolled exposure of backend services.
+
+## Validation
+Access restrictions were verified by attempting cross-service access.
+The Payments service user was unable to access Cards service directories
+and configuration files, confirming proper isolation.
+
 ## Result
 Reduced blast radius and improved auditability for banking services.
