@@ -1,0 +1,4 @@
+- Separated Docker images for Cards and Payments
+- Non-root execution inside containers
+- Immutable filesystem
+- Independent lifecycle and logs
