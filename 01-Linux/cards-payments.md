@@ -1,30 +1,64 @@
-# Linux Security BaseLine: Cards and Payments (SQB Mobile)
-## Business Context
-Cards and Payments modules handle financial transactions in SQB Mobile (B2C) and SQB Business (B2B). 
-Unathorized access may lead to financial lose.
+Я реализовал Linux security baseline для Cards и Payments с изоляцией пользователей, директорий, конфигураций и сетевого доступа, что снижает blast radius и повышает аудитоспособность банковских сервисов:
+# Linux Security Baseline: Cards & Payments (SQB Mobile)
 
-## Security Goals
-- Service isolation
-- Protection of sensitive configuration
-- Audit logging 
-- Least previlage access
+## Бизнес-контекст
+Модули **Cards** и **Payments** обрабатывают финансовые транзакции в
+**SQB Mobile (B2C)** и **SQB Business (B2B)**.  
+Несанкционированный доступ к данным сервисам может привести к финансовым потерям,
+компрометации данных клиентов и регуляторным рискам.
 
-## Implementation
-- Separate Linux users for cards and payments services
-- Isolated directories under /opt/sqb
-- Secure config files (chmod 600)
-- Centrilized logs under /var/log/sqb
-- Firewall with default deny policy
+## Цели безопасности
+- Изоляция сервисов на уровне операционной системы
+- Защита чувствительных конфигурационных файлов
+- Централизованное логирование и аудит
+- Реализация принципа наименьших привилегий (Least Privilege)
 
-## Threat Mitigation
-This baseline mitigates risks of lateral movement between services,
-unauthorized access to sensitive configuration files,
-and uncontrolled exposure of backend services.
+## Реализация
 
-## Validation
-Access restrictions were verified by attempting cross-service access.
-The Payments service user was unable to access Cards service directories
-and configuration files, confirming proper isolation.
+### Изоляция пользователей
+- Для каждого сервиса созданы отдельные Linux-пользователи:
+  - `cards_srv`
+  - `payments_srv`
+- Каждый сервис работает исключительно от своего пользователя
 
-## Result
-Reduced blast radius and improved auditability for banking services.
+### Изоляция директорий
+- Для сервисов созданы отдельные каталоги:
+  - `/opt/sqb/cards`
+  - `/opt/sqb/payments`
+- Права доступа ограничены (`chmod 750`)
+- Доступ между сервисами на уровне файловой системы запрещён
+
+### Защита конфигураций
+- Конфигурационные файлы доступны только владельцу сервиса
+- Использованы строгие права доступа (`chmod 600`)
+- Исключён доступ посторонних пользователей и сервисов
+
+### Логирование
+- Реализовано централизованное логирование в каталоге:
+  - `/var/log/sqb`
+- Каждый сервис пишет логи в собственный файл
+- Обеспечена базовая аудитоспособность действий сервисов
+
+### Сетевая защита
+- Включён firewall (UFW)
+- Политика по умолчанию: `deny incoming`
+- Разрешён только необходимый доступ (SSH)
+- Исключено неконтролируемое сетевое воздействие на сервисы
+
+## Митигация угроз
+Реализованный baseline снижает следующие риски:
+- Латеральное перемещение между сервисами
+- Несанкционированный доступ к конфигурационным файлам
+- Эскалация привилегий внутри системы
+- Неконтролируемая экспозиция backend-сервисов
+
+## Валидация
+Ограничения доступа были проверены практическим способом:
+- Пользователь сервиса **Payments** не смог получить доступ к каталогам
+  и конфигурационным файлам сервиса **Cards**
+- Подтверждена корректная изоляция сервисов на уровне ОС
+
+## Результат
+- Существенно снижен blast radius при возможной компрометации
+- Повышена прозрачность и аудит операций
+- Создан Linux security baseline, применимый для production-среды банка
