@@ -1,4 +1,4 @@
-Я реализовал Linux security baseline для Cards и Payments с изоляцией пользователей, директорий, конфигураций и сетевого доступа, что снижает blast radius и повышает аудитоспособность банковских сервисов:
+Реализовали Linux security baseline для Cards и Payments с изоляцией пользователей, директорий, конфигураций и сетевого доступа, что снижает blast radius и повышает аудитоспособность банковских сервисов:
 # Linux Security Baseline: Cards & Payments (SQB Mobile)
 
 ## Бизнес-контекст
