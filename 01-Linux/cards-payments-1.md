@@ -21,7 +21,7 @@
 
 Проверки выполнялись командами:
 - ls -ld /opt/sqb/*
-- id cards_srv`, `id payments_srv
+- id cards_srv, id payments_srv
 
 ### 2) Подготовлены конфигурационные файлы на хосте
 Созданы и размещены реальные конфиги в Linux baseline:
@@ -35,4 +35,5 @@
 Проверка прав:
 sudo ls -l /opt/sqb/cards/config.env
 sudo ls -l /opt/sqb/payments/config.env
+
 
