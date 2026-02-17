@@ -16,7 +16,6 @@ Portainer использовался как удобный интерфейс д
 * sqb/payments-service:secure
     
 Сборка выполнялась через:
-Plain textANTLR4BashCC#CSSCoffeeScriptCMakeDartDjangoDockerEJSErlangGi***
 docker build -t sqb/cards-service:secure ~/devsecops-portfolio/**
 docker build -t sqb/payments-service:secure ~/devsecops-portfolio/**
 
@@ -120,4 +119,5 @@ Threat Mitigation (что именно снизили)
 * payments-secure (sqb/payments-service:secure)
     
 * portainer (UI для управления)
+
 
