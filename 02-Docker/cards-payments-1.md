@@ -1,15 +1,15 @@
-### 3) Установлен Docker и выполнена базовая проверка
+### 3. Установлен Docker и выполнена базовая проверка
 
 Docker установлен на Ubuntu VM, выполнен smoke test
 Результат: Docker работает корректно, образы скачиваются и контейнеры запускаются.
 
-### 4) Установлен Portainer (UI для Docker)
+### 4. Установлен Portainer (UI для Docker)
 
 Развёрнут Portainer для управления контейнерами через веб-интерфейс (UI), доступ по адресу:
 https://localhost:94**
 Portainer использовался как удобный интерфейс для просмотра контейнеров, логов и состояния.
 
-### 5) Собраны защищённые Docker-образы
+### 5. Собраны защищённые Docker-образы
 
 Собраны образы:
 * sqb/cards-service:secure
@@ -25,7 +25,7 @@ Portainer использовался как удобный интерфейс д
 * запуск процесса не от root (USER) 
 * запуск приложения через app.sh
 
-### 6) Запуск containers в "secure runtime" режиме
+### 6. Запуск containers в "secure runtime" режиме
 
 #### Cards (secure)
 Контейнер запущен с параметрами безопасности:
@@ -40,13 +40,13 @@ sudo docker run -d \    --name cards-secure \    --read-only \    -v /opt/sqb/ca
 Аналогично для payments (UID берётся из id payments\_srv):
 sudo docker run -d \    --name payments-secure \    --read-only \    -v /opt/sqb/payments/config.env:/app/config.env:ro \    --user 1002:1002 \    sqb/payments-service:secure
 
-### 7) Валидация: контейнеры реально работают
+### 7. Валидация: контейнеры реально работают
 Проверка статуса контейнеров: docker ps
 Результат:
 * cards-secure — Running
 * payments-secure — Running
 
-### 8) Валидация: контейнер использует реальный конфиг из Linux baseline
+### 8. Валидация: контейнер использует реальный конфиг из Linux baseline
 Проверка, что конфиг примонтирован с хоста и read-only:
 docker inspect cards-secure | grep config.env -A 5  docker inspect payments-secure | grep config.env -A 5
 
@@ -56,7 +56,7 @@ docker inspect cards-secure | grep config.env -A 5  docker inspect payments-secu
 * "Mode": "ro"
 * "RW": false
   
-### 9) Валидация: контейнер НЕ root (UID согласован)
+### 9. Валидация: контейнер НЕ root (UID согласован)
 
 Вход в контейнер и проверка UID:
 sudo docker exec -it cards-secure sh  id
@@ -66,7 +66,7 @@ sudo docker exec -it cards-secure sh  id
 То же для payments:
 sudo docker exec -it payments-secure sh  id
 
-### 10) Валидация: конфиг читается, но не изменяется
+### 10. Валидация: конфиг читается, но не изменяется
 
 Чтение:
 cat /app/config.env
@@ -119,6 +119,7 @@ Threat Mitigation (что именно снизили)
 * payments-secure (sqb/payments-service:secure)
     
 * portainer (UI для управления)
+
 
 
 
