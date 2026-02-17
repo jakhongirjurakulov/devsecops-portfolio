@@ -8,7 +8,7 @@
 Компрометация одного сервиса не должна автоматически давать доступ ко второму, а чувствительные конфиги (пароли/эндпоинты) должны быть защищены от чтения/изменений.
 
 ## Что сделано: шаги и результат
-### 1) Подготовлен Linux Security Baseline (Host level)
+### 1. Подготовлен Linux Security Baseline (Host level)
 На хосте создана структура директорий сервисов:
 - /opt/sqb/cards
 - /opt/sqb/payments
@@ -23,7 +23,7 @@
 - ls -ld /opt/sqb/*
 - id cards_srv, id payments_srv
 
-### 2) Подготовлены конфигурационные файлы на хосте
+### 2. Подготовлены конфигурационные файлы на хосте
 Созданы и размещены реальные конфиги в Linux baseline:
 - /opt/sqb/cards/config.env
 - /opt/sqb/payments/config.env
@@ -35,5 +35,6 @@
 Проверка прав:
 sudo ls -l /opt/sqb/cards/config.env
 sudo ls -l /opt/sqb/payments/config.env
+
 
 
