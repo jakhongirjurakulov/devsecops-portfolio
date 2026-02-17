@@ -113,13 +113,11 @@ Threat Mitigation (что именно снизили)
 * **Reduced blast radius**: компрометация одного сервиса не даёт автоматический доступ ко второму
     
 
-Текущий статус
---------------
-
 Работают контейнеры:
-
+--------------
 * cards-secure (sqb/cards-service:secure)
     
 * payments-secure (sqb/payments-service:secure)
     
 * portainer (UI для управления)
+
