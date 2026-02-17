@@ -1,55 +1,125 @@
-# Docker Hardening: Cards & Payments (SQB)
+### 3) Установлен Docker и выполнена базовая проверка
 
-## Цель
+Docker установлен на Ubuntu VM, выполнен smoke test
+Результат: Docker работает корректно, образы скачиваются и контейнеры запускаются.
 
-Собрать и запустить сервисы **Cards** и **Payments** в Docker **без root**, с использованием **реальных конфигурационных файлов из Linux baseline**, с режимом **read-only** для файловой системы контейнера и **read-only** для конфигов, чтобы снизить риск компрометации и ограничить blast radius.
+### 4) Установлен Portainer (UI для Docker)
 
----
+Развёрнут Portainer для управления контейнерами через веб-интерфейс (UI), доступ по адресу:
+https://localhost:94**
+Portainer использовался как удобный интерфейс для просмотра контейнеров, логов и состояния.
 
-## Контекст (банковские сервисы)
+### 5) Собраны защищённые Docker-образы
 
-Модули **Cards** и **Payments** обрабатывают финансовые операции в **SQB Mobile (B2C)** и **SQB Business (B2B)**.  
-Компрометация одного сервиса не должна автоматически давать доступ ко второму, а чувствительные конфиги (пароли/эндпоинты) должны быть защищены от чтения/изменений.
+Собраны образы:
+* sqb/cards-service:secure
+* sqb/payments-service:secure
+    
+Сборка выполнялась через:
+Plain textANTLR4BashCC#CSSCoffeeScriptCMakeDartDjangoDockerEJSErlangGi***
+docker build -t sqb/cards-service:secure ~/devsecops-portfolio/**
+docker build -t sqb/payments-service:secure ~/devsecops-portfolio/**
 
----
+Ключевые принципы в образах:
 
-## Что сделано: шаги и результат
+* создание отдельного пользователя внутри контейнера  
+* запуск процесса не от root (USER) 
+* запуск приложения через app.sh
 
-### 1) Подготовлен Linux Security Baseline (Host level)
+### 6) Запуск containers в "secure runtime" режиме
 
-На хосте создана структура директорий сервисов:
+#### Cards (secure)
+Контейнер запущен с параметрами безопасности:
+* \--read-only (immutable filesystem)
+* \-v ...:ro (конфиг примонтирован read-only)
+* \--user : (контейнер работает не от root, UID согласован с хостом)
 
-- `/opt/sqb/cards`
-- `/opt/sqb/payments`
+Пример запуска (логика):
+sudo docker run -d \    --name cards-secure \    --read-only \    -v /opt/sqb/cards/config.env:/app/config.env:ro \    --user 1001:1001 \    sqb/cards-service:secure
 
-Для изоляции сервисов используются отдельные Linux-пользователи:
+#### Payments (secure)
+Аналогично для payments (UID берётся из id payments\_srv):
+sudo docker run -d \    --name payments-secure \    --read-only \    -v /opt/sqb/payments/config.env:/app/config.env:ro \    --user 1002:1002 \    sqb/payments-service:secure
 
-- `cards_srv`
-- `payments_srv`
+### 7) Валидация: контейнеры реально работают
+Проверка статуса контейнеров: docker ps
+Результат:
+* cards-secure — Running
+* payments-secure — Running
 
-Права на директории настроены так, чтобы сервисы были изолированы друг от друга (принцип **least privilege**).
+### 8) Валидация: контейнер использует реальный конфиг из Linux baseline
+Проверка, что конфиг примонтирован с хоста и read-only:
+docker inspect cards-secure | grep config.env -A 5  docker inspect payments-secure | grep config.env -A 5
 
-Проверки выполнялись командами:
+Результат:
+* "Source": "/opt/sqb//config.env"  
+* "Destination": "/app/config.env"
+* "Mode": "ro"
+* "RW": false
+  
+### 9) Валидация: контейнер НЕ root (UID согласован)
 
-- `ls -ld /opt/sqb/*`
-- `id cards_srv`, `id payments_srv`
+Вход в контейнер и проверка UID:
+sudo docker exec -it cards-secure sh  id
 
----
+Ожидаемо: UID соответствует сервисному пользователю на хосте (например 1001).
 
-### 2) Подготовлены конфигурационные файлы на хосте
+То же для payments:
+sudo docker exec -it payments-secure sh  id
 
-Созданы и размещены реальные конфиги в Linux baseline:
+### 10) Валидация: конфиг читается, но не изменяется
 
-- `/opt/sqb/cards/config.env`
-- `/opt/sqb/payments/config.env`
+Чтение:
+cat /app/config.env
 
-Настроены права:
+Проверка запрета записи (должно упасть с ошибкой):
+echo "hack=true" >> /app/config.env
 
-- владелец: соответствующий сервисный пользователь
-- права: `600` (только владелец может читать/писать)
+Результат:
+* Permission denied или Read-only file system
+    
+Это подтверждает:
 
-Проверка прав:
+* конфиг защищён
+    
+* даже при компрометации контейнера злоумышленник не сможет модифицировать конфиг или внедрить изменения
+    
 
-```bash
-sudo ls -l /opt/sqb/cards/config.env
-sudo ls -l /opt/sqb/payments/config.env
+Threat Mitigation (что именно снизили)
+--------------------------------------
+
+Данный baseline снижает риски:
+
+*   lateral movement между сервисами (Cards ≠ Payments)
+    
+*   несанкционированного доступа к чувствительным конфигам
+    
+*   подмены конфигурации внутри контейнера
+    
+*   закрепления злоумышленника (persistence) через запись на диск контейнера
+    
+
+Итог (Result)
+-------------
+
+Реализованы принципы DevSecOps:
+
+* **Least Privilege**: запуск без root и доступы по минимуму
+    
+* **Immutable Infrastructure**: --read-only делает файловую систему контейнера неизменяемой
+    
+* **Secure Configuration**: конфиг монтируется только для чтения
+    
+* **Reduced blast radius**: компрометация одного сервиса не даёт автоматический доступ ко второму
+    
+
+Текущий статус
+--------------
+
+Работают контейнеры:
+
+* cards-secure (sqb/cards-service:secure)
+    
+* payments-secure (sqb/payments-service:secure)
+    
+* portainer (UI для управления)
