@@ -34,13 +34,10 @@ Portainer использовался как удобный интерфейс д
 * \--user : (контейнер работает не от root, UID согласован с хостом)
 
 Пример запуска (логика):
-sudo docker run -d \ --name cards-secure \ --read-only \ -v /opt/sqb/cards/config.env:/app/config.env:ro \ --user 1001:1001 \ sqb/cards-service:secure
-
+sudo docker run -d \ --name cards-**
 #### Payments (secure)
 Аналогично для payments (UID берётся из id payments\_srv):
-sudo docker run -d \    --name payments-secure \    --read-only \    -v /opt/sqb/payments/config.env:/app/config.env:ro \    --user 1002:1002 \    sqb/payments-service:secure
-
-### 7. Валидация: контейнеры реально работают
+sudo docker run -d \    --name payments-s**
 Проверка статуса контейнеров: docker ps
 Результат:
 * cards-secure — Running
@@ -48,7 +45,7 @@ sudo docker run -d \    --name payments-secure \    --read-only \    -v /opt/sqb
 
 ### 8. Валидация: контейнер использует реальный конфиг из Linux baseline
 Проверка, что конфиг примонтирован с хоста и read-only:
-docker inspect cards-secure | grep config.env -A 5  docker inspect payments-secure | grep config.env -A 5
+docker inspect cards-secure | grep **
 
 Результат:
 * "Source": "/opt/sqb//config.env"  
@@ -119,6 +116,7 @@ Threat Mitigation (что именно снизили)
 * payments-secure (sqb/payments-service:secure)
     
 * portainer (UI для управления)
+
 
 
 
