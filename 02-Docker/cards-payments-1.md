@@ -15,8 +15,8 @@
 
 На хосте создана структура директорий сервисов:
 
-- `/opt/sqb/cards`
-- `/opt/sqb/payments`
+- /opt/sqb/cards
+- /opt/sqb/payments
 
 Для изоляции сервисов используются отдельные Linux-пользователи:
 
@@ -33,18 +33,15 @@
 ### 2) Подготовлены конфигурационные файлы на хосте
 
 Созданы и размещены реальные конфиги в Linux baseline:
-
-- `/opt/sqb/cards/config.env`
-- `/opt/sqb/payments/config.env`
+/opt/sqb/cards/config.env
+/opt/sqb/payments/config.env
 
 Настроены права:
-
 - владелец: соответствующий сервисный пользователь
 - права: `600` (только владелец может читать/писать)
 
 Проверка прав:
-
-```bash
 sudo ls -l /opt/sqb/cards/config.env
 sudo ls -l /opt/sqb/payments/config.env
+
 
