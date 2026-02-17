@@ -58,7 +58,7 @@ docker inspect cards-secure | grep **
 Вход в контейнер и проверка UID:
 sudo docker exec -it cards-secure sh  id
 
-Ожидаемо: UID соответствует сервисному пользователю на хосте (например 1001).
+Результат: UID соответствует сервисному пользователю на хосте (например 1001).
 
 То же для payments:
 sudo docker exec -it payments-secure sh  id
@@ -116,6 +116,7 @@ Threat Mitigation (что именно снизили)
 * payments-secure (sqb/payments-service:secure)
     
 * portainer (UI для управления)
+
 
 
 
